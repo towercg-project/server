@@ -54,7 +54,7 @@ export default class Server {
     this._store = await this._constructStore();
     this._plugins = this._constructPlugins();
 
-    this._initializePlugins();
+    await this._initializePlugins();
     this._httpServer = this._constructHttpServer();
     this._io = this._constructSocketIO();
     this._finishStarting();
@@ -90,17 +90,24 @@ export default class Server {
       const {pluginClass, pluginConfig} = pluginEntry;
 
       this.logger.debug(`Initializing '${pluginClass.pluginName}' (${pluginClass.name}).`);
-      return new pluginClass(pluginConfig, this.logger, this.eventBus, this._store);
+      return new pluginClass(
+        pluginConfig,
+        this
+      );
     });
 
     this.logger.debug(`${ret.length} plugins constructed.`);
     return ret;
   }
 
-  _initializePlugins() {
+  async _initializePlugins() {
     this.logger.debug("Initializing plugins.");
-    this._plugins.forEach((plugin) => plugin.doInitialize());
 
+    for (let plugin of this.plugins) {
+      await plugin.doInitialize();
+    }
+
+    this.logger.info("All plugins initialized.");
     this.eventBus.emit("global.allPluginsInitialized");
   }
 

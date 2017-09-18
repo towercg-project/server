@@ -27,7 +27,6 @@ function buildReducer(pluginEntries) {
 
   pluginEntries.forEach((pluginEntry) => {
     const { pluginClass } = pluginEntry;
-    console.log(pluginClass)
     const reducer = pluginClass.reducer || DEFAULT_REDUCER;
 
     baseReducer[pluginClass.pluginName] = reducer;

@@ -1,7 +1,14 @@
 import * as _ from 'lodash';
 
+import path from 'path';
+
 export class ServerPlugin {
-  constructor(pluginConfig, baseLogger, eventBus, store) {
+  constructor(pluginConfig, server) {
+    const baseLogger = server._logger;
+    const eventBus = server.eventBus;
+    const store = server.store;
+    const paths = server.config.paths;
+
     this._logger = baseLogger.child({pluginName: this.name});
     this.logger.debug(`${this.name} (${this.constructor.name}) constructed.`);
 
@@ -16,13 +23,16 @@ export class ServerPlugin {
       const type = `${this.name}.${baseType}`;
       this.logger.trace("Emitting event through plugin interface:", type)
       this._eventBus.emit(type, args);
-    }
+    };
 
     this.on = (baseType, listener) => {
       const type = `${this.name}.${baseType}`;
       this.logger.trace("Listening through plugin interface:", type)
       this.eventBus.on(type, listener)
-    }
+    };
+
+    this.computeStoragePath = (childPath) => path.join(paths.storage, childPath);
+    this.computeCachePath = (childPath) => path.join(paths.cache, childPath);
 
     this._storeState = store.getState()[this.name];
     this._state = _.cloneDeep(this._storeState);
@@ -47,10 +57,10 @@ export class ServerPlugin {
   get eventBus() { return this._eventBus; }
   get dispatch() { return this._dispatch; }
 
-  doInitialize() {
+  async doInitialize() {
     this.logger.debug("Initializing.");
 
-    this.initialize();
+    await this.initialize();
     this.logger.debug("Initialized.");
   }
 
