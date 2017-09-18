@@ -1,0 +1,67 @@
+{
+  "name": "@towercg/server",
+  "version": "0.0.0",
+  "main": "dist",
+  "license": "AGPL-3.0",
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "scripts": {
+    "build": "npx babel src -d dist",
+    "watch": "yarn build --watch",
+    "test": "npx jest"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.0.0",
+    "babel-core": "^6.26.0",
+    "babel-jest": "^21.0.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "jest": "^21.1.0"
+  },
+  "dependencies": {
+    "@towercg/server-plugin": "^0.0.0",
+    "auto-bind": "^1.1.0",
+    "bunyan": "^1.8.12",
+    "bunyan-prettystream": "^0.1.3",
+    "deep-freeze": "^0.0.1",
+    "eventemitter2": "^4.1.2",
+    "express": "^4.15.4",
+    "fs-extra": "^4.0.2",
+    "jsondiffpatch": "^0.2.4",
+    "lodash": "^4.17.4",
+    "redux": "^3.7.2",
+    "redux-storage": "^4.1.2",
+    "socket.io": "^2.0.3",
+    "socketio-wildcard": "^2.0.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "node": "8.0.0"
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      [
+        "transform-class-properties",
+        {
+          "spec": true
+        }
+      ]
+    ]
+  },
+  "jest": {
+    "globals": {
+      "__DEV__": true,
+      "__TEST__": true
+    },
+    "testPathIgnorePatterns": [
+      "<rootDir>/src"
+    ]
+  }
+}
