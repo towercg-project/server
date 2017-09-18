@@ -1,6 +1,6 @@
 {
   "name": "@towercg/server",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "dist",
   "license": "AGPL-3.0",
   "engines": {
@@ -20,7 +20,6 @@
     "jest": "^21.1.0"
   },
   "dependencies": {
-    "@towercg/server-plugin": "^0.0.0",
     "auto-bind": "^1.1.0",
     "bunyan": "^1.8.12",
     "bunyan-prettystream": "^0.1.3",
