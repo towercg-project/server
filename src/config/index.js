@@ -39,7 +39,8 @@ export class Config {
     this.packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
 
     this.logging = {
-      builder: Config.DEFAULT_LOG_FUNCTION
+      builder: Config.DEFAULT_LOG_FUNCTION,
+      logAllEvents: false
     };
     this.http = {
       port: 14400

@@ -15,7 +15,7 @@ export default class FileStorageEngine {
   }
 
   async save(state) {
-    const jsonState = JSON.stringify(state);
+    const jsonState = JSON.stringify(state, null, 2);
     return await fs.writeFile(this._path, jsonState);
   }
 }

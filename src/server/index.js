@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
 import autobind from 'auto-bind';
-import deepFreeze from 'deep-freeze';
 import bunyan from 'bunyan';
 import express from 'express';
 import http from 'http';
@@ -17,15 +16,16 @@ const jdp = jsondiffpatch.create();
 const NON_REBROADCASTED_NAMES = {
   "towercg-client.command": true
 };
+const NON_CLIENTPUSHED_NAMES = {
+  "towercg.stateChanged": true
+};
 
 export default class Server {
   constructor(config) {
     autobind(this);
 
-    this.config = deepFreeze(_.cloneDeep(config));
+    this.config = _.cloneDeep(config);
     this._logger = bunyan.createLogger(this.config.logging.builder(this.config));
-
-    this._eventBus = new EventEmitter2();
 
     this.logger.debug("-- LOG START --");
     process.on('exit', (exitCode) => {
@@ -50,6 +50,7 @@ export default class Server {
   async start() {
     this.logger.info("Starting server.");
 
+    this._eventBus = this._constructEventBus();
     this._ensurePaths();
     this._store = await this._constructStore();
     this._plugins = this._constructPlugins();
@@ -60,6 +61,18 @@ export default class Server {
     this._finishStarting();
 
     this.logger.info("Server startup completed.");
+  }
+
+  _constructEventBus() {
+    const bus = new EventEmitter2();
+
+    if (this.config.logging.logAllEvents) {
+      bus.onAny((eventName, data) => {
+        this.logger.debug(">> EVENT", eventName, data);
+      });
+    }
+
+    return bus;
   }
 
   _ensurePaths() {
@@ -143,6 +156,12 @@ export default class Server {
       }
     });
 
+    // this.eventBus.onAny((eventName, value) => {
+    //   if (!NON_CLIENTPUSHED_NAMES[eventName]) {
+    //     this.sendToAuthenticatedClients(eventName, value);
+    //   }
+    // });
+
     return ioServer;
   }
 
@@ -170,7 +189,7 @@ export default class Server {
     const onevent = socket.onevent;
     socket.onevent = (packet) => {
       const args = packet.data || [];
-      socket.logger.trace(packet);
+      this.config.logging.logPackets && socket.logger.trace(packet);
       onevent.call(socket, packet);
       this.eventBus.emit(packet[0], packet[1]);
     }
@@ -189,7 +208,7 @@ export default class Server {
           let ok = false;
 
           for (let plugin of this.plugins) {
-            const ret = plugin.doCommand(name);
+            const ret = plugin.doCommand(name, data);
 
             if (ret !== undefined) {
               ok = true;

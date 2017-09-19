@@ -17,7 +17,6 @@ export class ServerPlugin {
     this._dispatch = store.dispatch;
 
     this._commands = {};
-    this._commandRegexp = new RegExp(`^${this.name}\.`);
 
     this.emit = (baseType, args) => {
       const type = `${this.name}.${baseType}`;
@@ -69,7 +68,7 @@ export class ServerPlugin {
       return undefined;
     }
 
-    const localName = name.replace(this._commandRegexp, "");
+    const localName = name.replace(`${this.name}.`, "");
     const fn = this._commands[localName];
     if (fn) {
       const ret = fn(data);
