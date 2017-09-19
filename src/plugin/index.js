@@ -54,6 +54,7 @@ export class ServerPlugin {
   get pluginConfig() { return this._pluginConfig; }
   get logger() { return this._logger; }
   get eventBus() { return this._eventBus; }
+  get state() { return this._state; }
   get dispatch() { return this._dispatch; }
 
   async doInitialize() {
@@ -69,6 +70,8 @@ export class ServerPlugin {
     }
 
     const localName = name.replace(`${this.name}.`, "");
+
+    console.log(this.name, name, localName);
     const fn = this._commands[localName];
     if (fn) {
       const ret = fn(data);
@@ -85,6 +88,7 @@ export class ServerPlugin {
         ret = { result: ret };
       }
 
+      console.log(this.name, name, localName, ret);
       return ret;
     } else {
       return undefined;

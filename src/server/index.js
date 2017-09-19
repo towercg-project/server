@@ -202,7 +202,7 @@ export default class Server {
 
       if (socket.authenticated) {
         const replyName = `reply.${id}`;
-        socket.logger.debug("Command:", name, id);
+        socket.logger.debug("Command:", name, id, data);
 
         try {
           let ok = false;
@@ -218,10 +218,12 @@ export default class Server {
           }
 
           if (!ok) {
-            socket.logger.warn(`Unrecognized command: '${name}'.`);
+            socket.logger.warn("Unrecognized command:", name);
             throw new Error("Unrecognized command.");
           }
         } catch (error) {
+          socket.logger.error("Error from command:", name, data);
+          socket.logger.error(error);
           socket.emit(replyName, { error });
         }
       }
