@@ -132,6 +132,14 @@ export default class Server {
       res.send(JSON.stringify({ ok: true }));
     });
 
+    for (let plugin of this.plugins) {
+      const router = express.Router();
+
+      plugin.registerHttpHandlers(router);
+
+      app.use(`/${plugin.name}`, router);
+    }
+
     const server = http.Server(app);
     return server;
   }
@@ -166,8 +174,11 @@ export default class Server {
   }
 
   _finishStarting() {
+    const port = this.config.http.port;
     this.logger.info("Starting HTTP server.");
-    this._httpServer.listen(this.config.http.port);
+
+    this._httpServer.listen(port);
+    this.logger.info(`HTTP server started on port ${port}.`);
   }
 
   sendToAllClients(name, data) {

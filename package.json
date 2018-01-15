@@ -7,9 +7,13 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "build": "npx babel src -d dist",
-    "watch": "yarn build --watch",
-    "test": "npx jest"
+    "console": "babel-node",
+    "test": "yarn exec eslint src && jest dist",
+    "build": "babel --copy-files src -d dist",
+    "watch": "babel --watch --copy-files src -d dist",
+    "clean": "rm -rf dist",
+    "precommit": "npm run test",
+    "prepush": "npm run test"
   },
   "devDependencies": {
     "babel-cli": "^6.0.0",

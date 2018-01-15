@@ -15,7 +15,7 @@ export class Config {
       level: "debug",
       streams: [
         {
-          level: process.env.TOWERCG_CONSOLE_LOG_LEVEL || "debug",
+          level: process.env.TOWERCG_CONSOLE_LOG_LEVEL || "info",
           stream: prettyOutput
         },
         {

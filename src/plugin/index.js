@@ -30,8 +30,10 @@ export class ServerPlugin {
       this.eventBus.on(type, listener)
     };
 
-    this.computeStoragePath = (childPath) => path.join(paths.storage, childPath);
-    this.computeCachePath = (childPath) => path.join(paths.cache, childPath);
+    this.computeStoragePath =
+      (childPath) => path.join(paths.storage, this.name, childPath);
+    this.computeCachePath =
+      (childPath) => path.join(paths.storage, this.name, 'cache', childPath);
 
     this._storeState = store.getState()[this.name];
     this._state = _.cloneDeep(this._storeState);
@@ -103,6 +105,8 @@ export class ServerPlugin {
     this._commands[name] = fn;
     this._commandNames = Object.keys(this._commands);
   }
+
+  registerHttpHandlers(router) {}
 
   initialize() {
     throw new Error(`${this.constructor.name} needs to implement initialize().`);
