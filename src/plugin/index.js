@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 
+import Cache from '@eropple/promise-disk-cache';
 import path from 'path';
 
 export class ServerPlugin {
@@ -32,8 +33,12 @@ export class ServerPlugin {
 
     this.computeStoragePath =
       (childPath) => path.join(paths.storage, this.name, childPath);
-    this.computeCachePath =
+    this.computeCachePath = // TODO: remove after fixing plugins
       (childPath) => path.join(paths.storage, this.name, 'cache', childPath);
+
+    this._cache = new Cache({
+      cacheLocation: this.computeStoragePath("cache")
+    });
 
     this._storeState = store.getState()[this.name];
     this._state = _.cloneDeep(this._storeState);
@@ -55,6 +60,7 @@ export class ServerPlugin {
   get commandNames() { return this._commandNames; }
   get pluginConfig() { return this._pluginConfig; }
   get logger() { return this._logger; }
+  get cache() { return this._cache; }
   get eventBus() { return this._eventBus; }
   get state() { return this._state; }
   get dispatch() { return this._dispatch; }
@@ -62,7 +68,9 @@ export class ServerPlugin {
   async doInitialize() {
     this.logger.debug("Initializing.");
 
+    await this._cache.initialize();
     await this.initialize();
+
     this.logger.debug("Initialized.");
   }
 
