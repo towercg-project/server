@@ -9,6 +9,7 @@ import fsx from 'fs-extra';
 import path from 'path';
 import jsondiffpatch from 'jsondiffpatch';
 import EventEmitter2 from 'eventemitter2';
+import listExpressEndpoints from 'express-list-endpoints'
 
 import { buildStore } from '../store';
 
@@ -139,6 +140,8 @@ export default class Server {
 
       app.use(`/${plugin.name}`, router);
     }
+
+    const endpoints = listExpressEndpoints(app);
 
     const server = http.Server(app);
     return server;
